@@ -4,23 +4,46 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
+    <link rel="icon" type="image/png" href={{ url_for('static', filename="images/icons/favicon.ico") }}/>
+    <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="vendor/bootstrap/css/bootstrap.min.css") }}>
-
-    <title>{% block title %}Blog{% endblock %}</title>
-  <style>
-    {% block style %}
-
-    {% endblock %}
-  </style>
-  </head>
-  <body>
-    {% block content %}
-    {% endblock %}
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="vendor/fontawesome/css/all.min.css") }}>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="vendor/animate/animate.css") }}>
+    <!--===============================================================================================-->	
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="vendor/css-hamburgers/hamburgers.min.css") }}>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="vendor/select2/select2.min.css") }}>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="css/util.css") }}>
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename="css/main.css") }}>
+    <title>Blog-{% block title %}{% endblock %}</title>
     <script src={{ url_for('static', filename="vendor/jquery/jquery-3.2.1.min.js") }}></script>
 	  <script src={{ url_for('static', filename="vendor/bootstrap/js/popper.js") }}></script>
 	  <script src={{ url_for('static', filename="vendor/bootstrap/js/bootstrap.min.js") }}></script>
+    <!--===============================================================================================-->
+    <script src={{ url_for('static', filename="vendor/select2/select2.min.js") }}></script>
+    <!--===============================================================================================-->
+    <script src={{ url_for('static', filename="vendor/tilt/tilt.jquery.min.js") }}></script>
+    <script >
+      $('.js-tilt').tilt({
+        scale: 1.1
+      })
+    </script>
+    <style>{% block style %}{% endblock %}</style>
+  </head>
+  <body class="bg-dark" data-bs-theme="dark">
+    {% block content %}
+    {% endblock %}
+    {% import './macro/tpl-utils.jinja' as flagUtils %}
+    {{ flagUtils.submit_flag() }}
     {% block script %} {% endblock %}
+    <!-- 
+      Mike,rimuovi questo commento prima di rilasciare il form, 
+      hai testato la sicurezza del form?
+      Scrivi su slack appena per info !
+      - Bob -
+    -->
   </body>
 </html>

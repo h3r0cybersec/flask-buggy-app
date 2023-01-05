@@ -1,33 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Scenario{% endblock %}
 {% block content %}
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href={{ url_for("auth.logout") }}>Logout</a>
-      {% autoescape false %}
-        <form class="form-inline" id="formSearch">
-            <input class="form-control mr-sm-2" type="search" placeholder="commenti" aria-label="Search" name="tosearch" id="toSearch">
-            <button class="btn btn-outline-warning my-2 my-sm-0" type="submit" id="startSearch">Cerca</button>
-            <button class="btn btn-outline-danger ml-2 my-2 my-sm-0" id="abortSearch" style="display: none;">X</button>
-        </form>
-      {% endautoescape %}
+    <nav class="navbar bg-dark" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href='{{ url_for("auth.logout") }}'><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        {% autoescape false %}
+          <form class="d-flex" role="search" id="formSearch">
+            <div class="input-group">
+              <input class="form-control bg-body" type="search" aria-label="Search" name="tosearch" id="toSearch">
+              <button class="btn btn-outline-warning" type="submit" id="startSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="btn btn-outline-danger" id="abortSearch" style="display: none;"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>            
+          </form>
+        {% endautoescape %}
+      </div>
     </nav>
-    <div class="jumbotron jumbotron-fluid text-center bg-warning">
-        <div class="container">
-        <h1 class="display-4">LAB</h1>
+    <div class="p-5 d-flex justify-content-center bg-warning">
+      <div class="align-items-center py-5">
+        <h1 class="display-4 text-center">LAB</h1>
         <p class="lead">I nostri tecnici sfornano le app più sicure al mondo</p>
-        </div>
+      </div>
     </div>
-        <div class="d-flex justify-content-center">
-            <form id="formComment">
-              <div class="form-group">
-                  <label for="inComment">Il tuo commento è importante</label>
-                  <textarea class="form-control" id="inComment" name="inComment" rows="3" cols="100"></textarea>
-              </div>
-              <button type="submit" class="btn btn-outline-warning mb-5">Invia Commento</button>
-            </form>
+    <div class="d-flex justify-content-center mt-5">
+        <form id="formComment">
+          <div class="form-group">
+              <label for="inComment">Il tuo commento è importante</label>
+              <textarea class="form-control bg-body" id="inComment" name="inComment" rows="3" cols="100"></textarea>
+          </div>
+          <button type="submit" class="btn btn-outline-warning mb-3 mt-3">Invia Commento</button>
+        </form>
+    </div>
+    <section id="view">
+      <div class="text-center mb-5" id="searchLoading" style="display: none;">
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <section id="view">
-        </section>
+      </div>
+    </section>
 {% endblock %}
 {% block script %}
 <script>
@@ -57,16 +66,14 @@
           response.json().then( (comments) =>{
             for (c of comments) {
               $(view).append(`
-                  <article>
-                    <div class="row">
-                      <div class="col-12">
-                        <blockquote class="blockquote text-center">
-                          <p class="mb-0">${c}</p>
-                          <footer class="blockquote-footer">Author <cite title="Anonymous">anonymous</cite></footer>
-                        </blockquote>
-                      </div>
-                    </div>
-                  </article>
+              <figure class="text-center">
+                <blockquote class="blockquote">
+                  <p>${c}</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                  Author <cite title="anonymous">anonymous</cite>
+                </figcaption>
+              </figure>
               `)
             }
           });
@@ -84,16 +91,14 @@
         return response.json().then( (comments) => {
           for (c of comments) {
             $(view).append(`
-                <article>
-                  <div class="row">
-                    <div class="col-12">
-                      <blockquote class="blockquote text-center">
-                        <p class="mb-0">${c}</p>
-                        <footer class="blockquote-footer">Author <cite title="Anonymous">anonymous</cite></footer>
-                      </blockquote>
-                    </div>
-                  </div>
-                </article>
+              <figure class="text-center">
+                <blockquote class="blockquote">
+                  <p>${c}</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                  Author <cite title="anonymous">anonymous</cite>
+                </figcaption>
+              </figure>
             `)
           }
         });
@@ -114,14 +119,16 @@
           toSearch.val("");
           $("#abortSearch").show();
           $("#startSearch").prop("disabled", "true");
-          view.find("article").css("display", "none");
-
+          view.find("figure").css("display", "none");
+          view.find("#searchLoading").css("display", "block");
           for (r of data){
               view.append(`
-              <aside class="d-flex justify-content-center">
-                <blockquote class="blockquote">
-                <p class="mb-0">${r}</p>
-                </blockquote>
+              <aside class="d-flex justify-content-center flex-column">
+                <div class="text-center">
+                  <blockquote class="blockquote">
+                    <p class="mb-0"><u class="text-warning">${r}</u></p>
+                  </blockquote>
+                </div>
               </aside>
               `);
           }
@@ -152,8 +159,9 @@
     $("#abortSearch").on("click", (event) => {
       event.preventDefault();
       $("#startSearch").removeAttr("disabled");
+      view.find("#searchLoading").css("display", "none");
       view.find("aside").remove();
-      view.find("article").removeAttr("style");
+      view.find("figure").removeAttr("style");
       $("#abortSearch").hide();
     });
 </script>

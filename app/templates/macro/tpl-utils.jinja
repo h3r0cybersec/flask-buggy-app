@@ -1,0 +1,34 @@
+{% macro submit_flag() -%}
+    <!-- Modal -->
+    <div class="modal fade" id="flagModal" data-bs-theme="dark" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="flagLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="flagLabel">Invia flag</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group flex-nowrap">
+                    <span class="input-group-text" id="flagS"><i class="fa-solid fa-flag"></i></span>
+                    <input id="flag" type="text" class="form-control" placeholder="BvTechCTF{18808f288c37fce9cc445c3b3e10395b}" aria-label="flag" aria-describedby="flagS">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ANNULLA</button>
+                <button type="button" class="btn btn-primary">INVIA</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const flagModal = new bootstrap.Modal('#flagModal');
+    $(document).keydown((event) => {
+        let keycode = (event.keyCode ? event.keyCode : event.which);
+        if (event.ctrlKey && event.shiftKey && keycode == 70){
+            // ctrl+shift+F 
+            flagModal.show();
+        }
+    })
+    </script>
+{%- endmacro %}
