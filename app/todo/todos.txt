@@ -1,0 +1,5 @@
+*****************
+#     TODOS     #
+*****************
+- Fix vulnerable code on search form
+- Remove old backup.bak after all fixes

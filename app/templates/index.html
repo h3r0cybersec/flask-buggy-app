@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Scenario{% endblock %}
+{% block content %}
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href={{ url_for("auth.logout") }}>Logout</a>
+      {% autoescape false %}
+        <form class="form-inline" id="formSearch">
+            <input class="form-control mr-sm-2" type="search" placeholder="commenti" aria-label="Search" name="tosearch" id="toSearch">
+            <button class="btn btn-outline-warning my-2 my-sm-0" type="submit" id="startSearch">Cerca</button>
+            <button class="btn btn-outline-danger ml-2 my-2 my-sm-0" id="abortSearch" style="display: none;">X</button>
+        </form>
+      {% endautoescape %}
+    </nav>
+    <div class="jumbotron jumbotron-fluid text-center bg-warning">
+        <div class="container">
+        <h1 class="display-4">LAB</h1>
+        <p class="lead">I nostri tecnici sfornano le app più sicure al mondo</p>
+        </div>
+    </div>
+        <div class="d-flex justify-content-center">
+            <form id="formComment">
+              <div class="form-group">
+                  <label for="inComment">Il tuo commento è importante</label>
+                  <textarea class="form-control" id="inComment" name="inComment" rows="3" cols="100"></textarea>
+              </div>
+              <button type="submit" class="btn btn-outline-warning mb-5">Invia Commento</button>
+            </form>
+        </div>
+        <section id="view">
+        </section>
+{% endblock %}
+{% block script %}
+<script>
+
+    const formComment = $("#formComment");
+    const formSearch = $("#formSearch");
+    const inComment = $("#inComment");
+    const toSearch = $("#toSearch");
+    const view = $("#view");
+
+    function addNewComment(url){
+      /*
+      ** Add new comment
+      */
+      const formData = new FormData();
+      formData.append("comment", inComment.val());
+      // make request
+      return fetch(`${url}`, {
+        method: "POST",
+        headers: new Headers(),
+        body: formData,
+        redirect: "follow"
+      }).then( (response) => {
+        //console.log(response);
+          $(view).empty();
+          inComment.val("");
+          response.json().then( (comments) =>{
+            for (c of comments) {
+              $(view).append(`
+                  <article>
+                    <div class="row">
+                      <div class="col-12">
+                        <blockquote class="blockquote text-center">
+                          <p class="mb-0">${c}</p>
+                          <footer class="blockquote-footer">Author <cite title="Anonymous">anonymous</cite></footer>
+                        </blockquote>
+                      </div>
+                    </div>
+                  </article>
+              `)
+            }
+          });
+      });
+    }
+
+    function renderComments(url){
+      /*
+      **  Retrive all stored comments
+      */
+      return fetch(`${url}`, {
+      method : "GET",
+      headers : new Headers()
+      }).then( (response) => {
+        return response.json().then( (comments) => {
+          for (c of comments) {
+            $(view).append(`
+                <article>
+                  <div class="row">
+                    <div class="col-12">
+                      <blockquote class="blockquote text-center">
+                        <p class="mb-0">${c}</p>
+                        <footer class="blockquote-footer">Author <cite title="Anonymous">anonymous</cite></footer>
+                      </blockquote>
+                    </div>
+                  </div>
+                </article>
+            `)
+          }
+        });
+      });
+    }
+    
+    function searchComments(url){
+      /*
+      ** Search for comments 
+      */
+      return fetch(`${url}?${new URLSearchParams({
+        toSearch: `${toSearch.val()}`
+      })}`, {
+        method: "GET",
+        headers: new Headers()
+      }).then( (response) => {
+        response.json().then( (data) => {
+          toSearch.val("");
+          $("#abortSearch").show();
+          $("#startSearch").prop("disabled", "true");
+          view.find("article").css("display", "none");
+
+          for (r of data){
+              view.append(`
+              <aside class="d-flex justify-content-center">
+                <blockquote class="blockquote">
+                <p class="mb-0">${r}</p>
+                </blockquote>
+              </aside>
+              `);
+          }
+        });
+      });
+    }
+    
+    /**********************************************
+    **              MAIN LOGIC 
+    ***********************************************/
+    renderComments("/showcomments")
+    /**********************************************
+    **              EVENT HANDLER 
+    ***********************************************/
+    // when user want add new comment 
+    $(formComment).on("submit", (event) => {
+      event.preventDefault();
+      addNewComment("/leavecomment");
+    });
+
+    // when user want search for comments
+    $(formSearch).on("submit", (event) => {
+      event.preventDefault();
+      searchComments("/search");
+    });
+    
+    // When abort search
+    $("#abortSearch").on("click", (event) => {
+      event.preventDefault();
+      $("#startSearch").removeAttr("disabled");
+      view.find("aside").remove();
+      view.find("article").removeAttr("style");
+      $("#abortSearch").hide();
+    });
+</script>
+{% endblock %}
